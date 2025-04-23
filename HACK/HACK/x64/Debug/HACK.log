@@ -1,0 +1,11 @@
+﻿  MyForm.cpp
+C:\Users\1\source\repos\HACK\HACK\Doczip.h(20,32): warning C4018: <: несоответствие типов со знаком и без знака
+  (компиляция исходного файла "MyForm.cpp")
+  
+  MyForm.obj : обнаружен модуль MSIL; для MSIL последовательная компоновка отключена; выполняется полная компоновка
+MyForm.obj : warning LNK4248: неразрешенная лексема TypeRef (01000029) для "zip_source"; образ нельзя запустить
+MyForm.obj : warning LNK4248: неразрешенная лексема TypeRef (0100002E) для "zip"; образ нельзя запустить
+MyForm.obj : warning LNK4248: неразрешенная лексема TypeRef (01000034) для "zip_file"; образ нельзя запустить
+  HACK.vcxproj -> C:\Users\1\source\repos\HACK\x64\Debug\HACK.exe
+  "pwsh.exe" не является внутренней или внешней
+  командой, исполняемой программой или пакетным файлом.
