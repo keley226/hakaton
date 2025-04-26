@@ -2,3 +2,7 @@ C:\Users\1\source\repos\HACK\HACK\x64\Debug\HACK.vcxproj.AssemblyReference.cache
 C:\Users\1\source\repos\HACK\HACK\x64\Debug\HACK.MyForm.resources
 C:\Users\1\source\repos\HACK\HACK\x64\Debug\HACK.vcxproj.GenerateResource.cache
 C:\Users\1\source\repos\HACK\HACK\x64\Debug\HACK.vcxproj.Up2Date
+C:\Users\1\Desktop\hakaton\HACK\HACK\x64\Debug\HACK.vcxproj.AssemblyReference.cache
+C:\Users\1\Desktop\hakaton\HACK\HACK\x64\Debug\HACK.MyForm.resources
+C:\Users\1\Desktop\hakaton\HACK\HACK\x64\Debug\HACK.vcxproj.GenerateResource.cache
+C:\Users\1\Desktop\hakaton\HACK\HACK\x64\Debug\HACK.vcxproj.Up2Date
