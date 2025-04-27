@@ -10,12 +10,10 @@ bool processDocx(const std::string& inputPath, const std::string& outputPath) {
     std::string docXml = tempDir + "/word/document.xml";
 
     if (!extractDocx(inputPath, tempDir)) {
-        std::cerr << "Распаковка не удалась!" << std::endl;
         return false;
     }
 
     if (!fs::exists(docXml)) {
-        std::cerr << "Файл document.xml не найден!" << std::endl;
         return false;
     }
 
@@ -59,7 +57,11 @@ namespace HACK {
     private: System::Windows::Forms::TextBox^ textBox3;
     private: System::Windows::Forms::TextBox^ textBox4;
     private: System::Windows::Forms::TextBox^ textBox5;
-    private: System::Windows::Forms::CheckBox^ checkBox1;
+
+    private: System::Windows::Forms::Label^ label3;
+    private: System::Windows::Forms::Label^ label4;
+    private: System::Windows::Forms::Label^ label5;
+    private: System::Windows::Forms::Label^ label6;
 
 
            System::ComponentModel::Container^ components;
@@ -77,6 +79,14 @@ namespace HACK {
                    buttonTheme->BackColor = Color::Black;
                    buttonTheme->ForeColor = Color::White;
                    topPanel->BackColor = Color::Black;
+                   textBox2->BackColor = Color::FromArgb(45, 45, 45);
+                   textBox2->ForeColor = Color::White;
+                   textBox3->BackColor = Color::FromArgb(45, 45, 45);
+                   textBox3->ForeColor = Color::White;
+                   textBox4->BackColor = Color::FromArgb(45, 45, 45);
+                   textBox4->ForeColor = Color::White;
+                   textBox5->BackColor = Color::FromArgb(45, 45, 45);
+                   textBox5->ForeColor = Color::White;
                }
                else {
                    this->BackColor = Color::WhiteSmoke;
@@ -90,6 +100,15 @@ namespace HACK {
                    buttonTheme->BackColor = Color::RoyalBlue;
                    buttonTheme->ForeColor = Color::Black;
                    topPanel->BackColor = Color::RoyalBlue;
+                   textBox2->BackColor = Color::White;
+                   textBox2->ForeColor = Color::Black;
+                   textBox3->BackColor = Color::White;
+                   textBox3->ForeColor = Color::Black;
+                   textBox4->BackColor = Color::White;
+                   textBox4->ForeColor = Color::Black;
+                   textBox5->BackColor = Color::White;
+                   textBox5->ForeColor = Color::Black;
+
                }
            }
 
@@ -106,14 +125,17 @@ namespace HACK {
                this->textBox3 = (gcnew System::Windows::Forms::TextBox());
                this->textBox4 = (gcnew System::Windows::Forms::TextBox());
                this->textBox5 = (gcnew System::Windows::Forms::TextBox());
-               this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
+               this->label3 = (gcnew System::Windows::Forms::Label());
+               this->label4 = (gcnew System::Windows::Forms::Label());
+               this->label5 = (gcnew System::Windows::Forms::Label());
+               this->label6 = (gcnew System::Windows::Forms::Label());
                this->topPanel->SuspendLayout();
                this->SuspendLayout();
                // 
                // button1
                // 
                this->button1->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-               this->button1->Location = System::Drawing::Point(337, 348);
+               this->button1->Location = System::Drawing::Point(208, 344);
                this->button1->Name = L"button1";
                this->button1->Size = System::Drawing::Size(140, 35);
                this->button1->TabIndex = 4;
@@ -124,7 +146,7 @@ namespace HACK {
                // 
                this->label1->AutoSize = true;
                this->label1->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
-               this->label1->Location = System::Drawing::Point(333, 109);
+               this->label1->Location = System::Drawing::Point(43, 107);
                this->label1->Name = L"label1";
                this->label1->Size = System::Drawing::Size(144, 19);
                this->label1->TabIndex = 3;
@@ -133,7 +155,7 @@ namespace HACK {
                // textBox1
                // 
                this->textBox1->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
-               this->textBox1->Location = System::Drawing::Point(356, 131);
+               this->textBox1->Location = System::Drawing::Point(66, 129);
                this->textBox1->Multiline = true;
                this->textBox1->Name = L"textBox1";
                this->textBox1->Size = System::Drawing::Size(101, 22);
@@ -145,13 +167,13 @@ namespace HACK {
                this->topPanel->Dock = System::Windows::Forms::DockStyle::Top;
                this->topPanel->Location = System::Drawing::Point(0, 0);
                this->topPanel->Name = L"topPanel";
-               this->topPanel->Size = System::Drawing::Size(854, 60);
+               this->topPanel->Size = System::Drawing::Size(559, 60);
                this->topPanel->TabIndex = 1;
                // 
                // buttonTheme
                // 
                this->buttonTheme->BackColor = System::Drawing::Color::White;
-               this->buttonTheme->Location = System::Drawing::Point(822, 9);
+               this->buttonTheme->Location = System::Drawing::Point(12, 9);
                this->buttonTheme->Name = L"buttonTheme";
                this->buttonTheme->Size = System::Drawing::Size(20, 20);
                this->buttonTheme->TabIndex = 0;
@@ -160,7 +182,7 @@ namespace HACK {
                // 
                // outputNameBox
                // 
-               this->outputNameBox->Location = System::Drawing::Point(356, 183);
+               this->outputNameBox->Location = System::Drawing::Point(66, 181);
                this->outputNameBox->Name = L"outputNameBox";
                this->outputNameBox->Size = System::Drawing::Size(100, 23);
                this->outputNameBox->TabIndex = 5;
@@ -169,7 +191,7 @@ namespace HACK {
                // 
                this->label2->AutoSize = true;
                this->label2->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
-               this->label2->Location = System::Drawing::Point(333, 162);
+               this->label2->Location = System::Drawing::Point(43, 160);
                this->label2->Name = L"label2";
                this->label2->Size = System::Drawing::Size(154, 19);
                this->label2->TabIndex = 6;
@@ -178,7 +200,7 @@ namespace HACK {
                // textBox2
                // 
                this->textBox2->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
-               this->textBox2->Location = System::Drawing::Point(691, 131);
+               this->textBox2->Location = System::Drawing::Point(368, 129);
                this->textBox2->Multiline = true;
                this->textBox2->Name = L"textBox2";
                this->textBox2->Size = System::Drawing::Size(101, 22);
@@ -187,7 +209,7 @@ namespace HACK {
                // textBox3
                // 
                this->textBox3->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
-               this->textBox3->Location = System::Drawing::Point(691, 181);
+               this->textBox3->Location = System::Drawing::Point(368, 181);
                this->textBox3->Multiline = true;
                this->textBox3->Name = L"textBox3";
                this->textBox3->Size = System::Drawing::Size(101, 22);
@@ -196,7 +218,7 @@ namespace HACK {
                // textBox4
                // 
                this->textBox4->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
-               this->textBox4->Location = System::Drawing::Point(691, 224);
+               this->textBox4->Location = System::Drawing::Point(368, 234);
                this->textBox4->Multiline = true;
                this->textBox4->Name = L"textBox4";
                this->textBox4->Size = System::Drawing::Size(101, 22);
@@ -205,26 +227,59 @@ namespace HACK {
                // textBox5
                // 
                this->textBox5->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
-               this->textBox5->Location = System::Drawing::Point(691, 264);
+               this->textBox5->Location = System::Drawing::Point(368, 288);
                this->textBox5->Multiline = true;
                this->textBox5->Name = L"textBox5";
                this->textBox5->Size = System::Drawing::Size(101, 22);
                this->textBox5->TabIndex = 10;
                // 
-               // checkBox1
+               // label3
                // 
-               this->checkBox1->AutoSize = true;
-               this->checkBox1->Location = System::Drawing::Point(356, 214);
-               this->checkBox1->Name = L"checkBox1";
-               this->checkBox1->Size = System::Drawing::Size(82, 19);
-               this->checkBox1->TabIndex = 11;
-               this->checkBox1->Text = L"checkBox1";
-               this->checkBox1->UseVisualStyleBackColor = true;
+               this->label3->AutoSize = true;
+               this->label3->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
+               this->label3->Location = System::Drawing::Point(364, 107);
+               this->label3->Name = L"label3";
+               this->label3->Size = System::Drawing::Size(109, 19);
+               this->label3->TabIndex = 12;
+               this->label3->Text = L"Название темы:";
+               // 
+               // label4
+               // 
+               this->label4->AutoSize = true;
+               this->label4->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
+               this->label4->Location = System::Drawing::Point(364, 160);
+               this->label4->Name = L"label4";
+               this->label4->Size = System::Drawing::Size(107, 19);
+               this->label4->TabIndex = 13;
+               this->label4->Text = L"Тип документа:";
+               // 
+               // label5
+               // 
+               this->label5->AutoSize = true;
+               this->label5->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
+               this->label5->Location = System::Drawing::Point(364, 212);
+               this->label5->Name = L"label5";
+               this->label5->Size = System::Drawing::Size(98, 19);
+               this->label5->TabIndex = 14;
+               this->label5->Text = L"Имя студента:";
+               // 
+               // label6
+               // 
+               this->label6->AutoSize = true;
+               this->label6->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10));
+               this->label6->Location = System::Drawing::Point(364, 266);
+               this->label6->Name = L"label6";
+               this->label6->Size = System::Drawing::Size(57, 19);
+               this->label6->TabIndex = 15;
+               this->label6->Text = L"Группа:";
                // 
                // MyForm
                // 
-               this->ClientSize = System::Drawing::Size(854, 416);
-               this->Controls->Add(this->checkBox1);
+               this->ClientSize = System::Drawing::Size(559, 426);
+               this->Controls->Add(this->label6);
+               this->Controls->Add(this->label5);
+               this->Controls->Add(this->label4);
+               this->Controls->Add(this->label3);
                this->Controls->Add(this->textBox5);
                this->Controls->Add(this->textBox4);
                this->Controls->Add(this->textBox3);
@@ -271,6 +326,7 @@ namespace HACK {
         std::string tempDir = "unzipped_temp";
         std::string docXml = tempDir + "/word/document.xml";
 
+
         try {
             if (!extractDocx(inputPath, tempDir)) {
                 MessageBox::Show("Ошибка при распаковке файла", "Ошибка");
@@ -288,7 +344,7 @@ namespace HACK {
 
             std::string s1 = to_utf8(str1);
             std::string s2 = to_utf8(str2);
-            std::string s3 = to_utf8("/" + str3);
+            std::string s3 = to_utf8("____________/" + str3);
             std::string s4 = to_utf8("Студент группы " + str4);
 
             formatDocumentXml(docXml);
@@ -300,6 +356,7 @@ namespace HACK {
             MessageBox::Show(gcnew String(ex.what()), "Ошибка");
         }
     }
+
 
     };
 }

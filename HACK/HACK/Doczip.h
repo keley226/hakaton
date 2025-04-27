@@ -21,7 +21,6 @@ bool extractDocx(const std::string& inputPath, const std::string& outDir) {
     int err = 0;
     zip* z = zip_open(inputPath.c_str(), ZIP_RDONLY, &err);
     if (!z) {
-        std::cerr << "Не удалось открыть docx" << std::endl;
         return false;
     }
     zip_int64_t num = zip_get_num_entries(z, 0);
@@ -46,34 +45,52 @@ bool extractDocx(const std::string& inputPath, const std::string& outDir) {
 
 void formatDocumentXml(const std::string& xmlPath) {
     tinyxml2::XMLDocument doc;
-    if (doc.LoadFile(xmlPath.c_str()) != XML_SUCCESS) {
-        std::cerr << "Ошибка загрузки XML" << std::endl;
+    if (doc.LoadFile(xmlPath.c_str()) != tinyxml2::XML_SUCCESS) {
         return;
     }
-    XMLElement* root = doc.FirstChildElement("w:document");
+    tinyxml2::XMLElement* root = doc.FirstChildElement("w:document");
     if (!root) return;
-    XMLElement* body = root->FirstChildElement("w:body");
-    for (XMLElement* para = body->FirstChildElement("w:p"); para; para = para->NextSiblingElement("w:p")) {
-        for (XMLElement* run = para->FirstChildElement("w:r"); run; run = run->NextSiblingElement("w:r")) {
-            XMLElement* rPr = run->FirstChildElement("w:rPr");
-            if (!rPr) rPr = run->InsertFirstChild(doc.NewElement("w:rPr"))->ToElement();
-            XMLElement* fonts = rPr->FirstChildElement("w:rFonts");
-            if (!fonts) fonts = rPr->InsertNewChildElement("w:rFonts");
-            fonts->SetAttribute("w:ascii", "Times New Roman");
-            fonts->SetAttribute("w:hAnsi", "Times New Roman");
-            XMLElement* size = rPr->FirstChildElement("w:sz");
-            if (!size) size = rPr->InsertNewChildElement("w:sz");
-            size->SetAttribute("w:val", "28");
-            XMLElement* color = rPr->FirstChildElement("w:color");
-            if (!color) color = rPr->InsertNewChildElement("w:color");
-            color->SetAttribute("w:val", "000000");
+    tinyxml2::XMLElement* body = root->FirstChildElement("w:body");
+    if (!body) return;
+    for (tinyxml2::XMLElement* para = body->FirstChildElement("w:p"); para; para = para->NextSiblingElement("w:p")) {
+        tinyxml2::XMLElement* pPr = para->FirstChildElement("w:pPr");
+        if (!pPr) {
+            pPr = para->InsertFirstChild(doc.NewElement("w:pPr"))->ToElement();
         }
-        XMLElement* pPr = para->FirstChildElement("w:pPr");
-        if (!pPr) pPr = para->InsertFirstChild(doc.NewElement("w:pPr"))->ToElement();
-        XMLElement* spacing = pPr->FirstChildElement("w:spacing");
-        if (!spacing) spacing = pPr->InsertNewChildElement("w:spacing");
+        tinyxml2::XMLElement* jc = pPr->FirstChildElement("w:jc");
+        if (!jc) {
+            jc = pPr->InsertNewChildElement("w:jc");
+        }
+        jc->SetAttribute("w:val", "both");
+        tinyxml2::XMLElement* spacing = pPr->FirstChildElement("w:spacing");
+        if (!spacing) {
+            spacing = pPr->InsertNewChildElement("w:spacing");
+        }
         spacing->SetAttribute("w:line", "360");
         spacing->SetAttribute("w:lineRule", "auto");
+        for (tinyxml2::XMLElement* run = para->FirstChildElement("w:r"); run; run = run->NextSiblingElement("w:r")) {
+            tinyxml2::XMLElement* rPr = run->FirstChildElement("w:rPr");
+            if (!rPr) {
+                rPr = run->InsertFirstChild(doc.NewElement("w:rPr"))->ToElement();
+            }
+            tinyxml2::XMLElement* fonts = rPr->FirstChildElement("w:rFonts");
+            if (!fonts) {
+                fonts = rPr->InsertNewChildElement("w:rFonts");
+            }
+            fonts->SetAttribute("w:ascii", "Times New Roman");
+            fonts->SetAttribute("w:hAnsi", "Times New Roman");
+
+            tinyxml2::XMLElement* size = rPr->FirstChildElement("w:sz");
+            if (!size) {
+                size = rPr->InsertNewChildElement("w:sz");
+            }
+            size->SetAttribute("w:val", "28");
+            tinyxml2::XMLElement* color = rPr->FirstChildElement("w:color");
+            if (!color) {
+                color = rPr->InsertNewChildElement("w:color");
+            }
+            color->SetAttribute("w:val", "000000");
+        }
     }
     doc.SaveFile(xmlPath.c_str());
 }
@@ -82,7 +99,6 @@ void formatHeadingsInFile(const std::string& filePath) {
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLError eResult = doc.LoadFile(filePath.c_str());
     if (eResult != tinyxml2::XML_SUCCESS) {
-        std::cerr << "Ошибка при загрузке файла: " << filePath << std::endl;
         return;
     }
     tinyxml2::XMLElement* body = doc.FirstChildElement("w:document")->FirstChildElement("w:body");
@@ -109,7 +125,6 @@ void formatHeadingsInFile(const std::string& filePath) {
     }
     eResult = doc.SaveFile(filePath.c_str());
     if (eResult != tinyxml2::XML_SUCCESS) {
-        std::cerr << "Ошибка при сохранении файла: " << filePath << std::endl;
         return;
     }
 }
@@ -120,30 +135,51 @@ void addTitlePage(const std::string& filePath, const std::string& topic,
     using namespace tinyxml2;
     tinyxml2::XMLDocument doc;
     if (doc.LoadFile(filePath.c_str()) != XML_SUCCESS) {
-        std::cerr << "Не удалось загрузить файл: " << filePath << std::endl;
         return;
     }
 
     XMLElement* document = doc.FirstChildElement("w:document");
     if (!document) {
-        std::cerr << "Не найден <w:document>" << std::endl;
         return;
     }
 
     XMLElement* body = document->FirstChildElement("w:body");
     if (!body) {
-        std::cerr << "Не найден <w:body>" << std::endl;
         return;
     }
 
-    auto createParagraph = [&](const std::string& text, bool isLast = false) -> XMLElement* {
+    auto createParagraph = [&](const std::string& text, const char* pos, int spaceB, int spaceA, int fontSize, bool isLast = false, int line = 360, const char* l = "auto", int leftIndent = 0) -> XMLElement* {
         XMLElement* p = doc.NewElement("w:p");
 
         XMLElement* pPr = doc.NewElement("w:pPr");
         XMLElement* jc = doc.NewElement("w:jc");
-        jc->SetAttribute("w:val", "center");
+        jc->SetAttribute("w:val", pos);
         pPr->InsertEndChild(jc);
+
+        if (spaceB > 0) {
+            XMLElement* spacingBefore = doc.NewElement("w:spacing");
+            spacingBefore->SetAttribute("w:before", spaceB);
+            pPr->InsertEndChild(spacingBefore);
+        }
+
+        if (spaceA > 0) {
+            XMLElement* spacingAfter = doc.NewElement("w:spacing");
+            spacingAfter->SetAttribute("w:after", spaceA);
+            pPr->InsertEndChild(spacingAfter);
+        }
+        XMLElement* ind = doc.NewElement("w:ind");
+        ind->SetAttribute("w:left", leftIndent);
+        ind->SetAttribute("w:firstLine", 0);
+        pPr->InsertEndChild(ind);
+
+
+        XMLElement* spacing = doc.NewElement("w:spacing");
+        spacing->SetAttribute("w:line", line);
+        spacing->SetAttribute("w:lineRule", l);
+        pPr->InsertEndChild(spacing);
         p->InsertEndChild(pPr);
+
+
 
         XMLElement* r = doc.NewElement("w:r");
         XMLElement* rPr = doc.NewElement("w:rPr");
@@ -153,8 +189,10 @@ void addTitlePage(const std::string& filePath, const std::string& topic,
         rFonts->SetAttribute("w:hAnsi", "Times New Roman");
         rPr->InsertEndChild(rFonts);
 
+
+
         XMLElement* sz = doc.NewElement("w:sz");
-        sz->SetAttribute("w:val", "28");
+        sz->SetAttribute("w:val", fontSize);
         rPr->InsertEndChild(sz);
 
         r->InsertEndChild(rPr);
@@ -192,30 +230,21 @@ void addTitlePage(const std::string& filePath, const std::string& topic,
         return p;
         };
 
-    body->InsertFirstChild(createParagraph(to_utf8("«_»________2025 г."), true));
-    body->InsertFirstChild(createParagraph(studentName, false));
-    body->InsertFirstChild(createParagraph(group, false));
-
-    body->InsertFirstChild(createParagraph(to_utf8("«_»________2025 г."), false));
-    body->InsertFirstChild(createParagraph(to_utf8("/ И. Ю. Кулаков"), false));
-    body->InsertFirstChild(createParagraph(to_utf8("Руководитель"), false));
-
-    body->InsertFirstChild(createParagraph(to_utf8("ПТИ.ЛР 4092. 004.021"), false));
-    body->InsertFirstChild(createParagraph(to_utf8("по специальности 09.03.01 Информатика и вычислительная техника"), false));
-    body->InsertFirstChild(createParagraph(docType, false));
-    body->InsertFirstChild(createParagraph(topic, false));
-
-    body->InsertFirstChild(createParagraph(to_utf8("КАФЕДРА ИНФОРМАЦИОННЫХ ТЕХНОЛОГИЙ И СИСТЕМ"), false));
-    body->InsertFirstChild(createParagraph(to_utf8("ПОЛИТЕХНИЧЕСКИЙ ИНСТИТУТ"), false));
-    body->InsertFirstChild(createParagraph(to_utf8("«Новгородский государственный университет имени Ярослава Мудрого»"), false));
-    body->InsertFirstChild(createParagraph(to_utf8("образовательное учреждение высшего образования"), false));
-    body->InsertFirstChild(createParagraph(to_utf8("Федеральное государственное бюджетное"), false));
-    body->InsertFirstChild(createParagraph(to_utf8("Министерство науки и высшего образования Российской Федерации"), false));
-
-    if (doc.SaveFile(filePath.c_str()) != XML_SUCCESS) {
-        std::cerr << "Ошибка при сохранении файла: " << filePath << std::endl;
-    }
-    else {
-        std::cout << "ГОСТ-титульный лист успешно добавлен.\n";
-    }
+    body->InsertFirstChild(createParagraph(to_utf8("«___»____________2025 г."), "both", 0, 0, 28, true, 360, "auto", 4819));
+    body->InsertFirstChild(createParagraph(studentName, "both", 0, 0, 28, false, 360, "auto", 4819));
+    body->InsertFirstChild(createParagraph(group, "both", 322, 0, 28, false, 360, "auto", 4819));
+    body->InsertFirstChild(createParagraph(to_utf8("«___»____________2025 г."), "both", 0, 0, 28, false, 360, "auto", 4819));
+    body->InsertFirstChild(createParagraph(to_utf8("____________/ И. Ю. Кулаков"), "both", 0, 0, 28, false, 360, "auto", 4819));
+    body->InsertFirstChild(createParagraph(to_utf8("Руководитель"), "both", 322, 0, 28, false, 360, "auto", 4819));
+    body->InsertFirstChild(createParagraph(to_utf8("ПТИ.ЛР 4092. 004.021"), "center", 0, 0, 28, false, 360, "auto"));
+    body->InsertFirstChild(createParagraph(to_utf8("по специальности 09.03.01 Информатика и вычислительная техника"), "center", 0, 0, 28, false, 360, "auto"));
+    body->InsertFirstChild(createParagraph(docType, "center", 644, 0, 28, false, 360, "auto"));
+    body->InsertFirstChild(createParagraph(topic, "center", 1288, 0, 32, false, 360, "auto"));
+    body->InsertFirstChild(createParagraph(to_utf8("КАФЕДРА ИНФОРМАЦИОННЫХ ТЕХНОЛОГИЙ И СИСТЕМ"), "center", 322, 0, 24, false, 252, "exact"));
+    body->InsertFirstChild(createParagraph(to_utf8("ПОЛИТЕХНИЧЕСКИЙ ИНСТИТУТ"), "center", 0, 0, 24, false, 252, "exact"));
+    body->InsertFirstChild(createParagraph(to_utf8("«Новгородский государственный университет имени Ярослава Мудрого»"), "center", 0, 0, 24, false, 252, "exact"));
+    body->InsertFirstChild(createParagraph(to_utf8("образовательное учреждение высшего образования"), "center", 0, 0, 24, false, 252, "exact"));
+    body->InsertFirstChild(createParagraph(to_utf8("Федеральное государственное бюджетное"), "center", 0, 0, 24, false, 252, "exact"));
+    body->InsertFirstChild(createParagraph(to_utf8("Министерство науки и высшего образования Российской Федерации"), "center", 0, 0, 24, false, 252, "exact"));
+    doc.SaveFile(filePath.c_str());
 }
